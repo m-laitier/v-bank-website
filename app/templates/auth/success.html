@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:340px;height:340px;bottom:-80px;left:-100px;opacity:.55;"></div>
+<div class="blob" style="width:180px;height:180px;top:60px;right:80px;opacity:.45;"></div>
+<div class="blob" style="width:120px;height:120px;top:-20px;right:380px;opacity:.30;"></div>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 90px);gap:36px;text-align:center;padding:40px;">
+    <h1 style="font-size:38px;font-weight:900;max-width:800px;line-height:1.3;">
+        Благодарим за оформление!<br>
+        <span style="font-size:34px;">Наш оператор свяжется с вами в течение нескольких минут</span>
+    </h1>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary" style="min-width:200px;">На главную</a>
+        <a href="{{ url_for('cabinet.cabinet') }}" class="btn btn-primary" style="min-width:200px;">Личный кабинет</a>
+    </div>
+</div>
+{% endblock %}

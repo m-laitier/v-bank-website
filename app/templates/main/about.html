@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:360px;height:360px;bottom:-80px;left:-100px;opacity:.5;"></div>
+<div class="blob" style="width:200px;height:200px;top:50px;right:80px;opacity:.40;"></div>
+<div class="blob-rect" style="width:150px;height:150px;top:80px;left:260px;transform:rotate(22deg);opacity:.3;"></div>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;padding:40px 48px 80px;gap:36px;max-width:1400px;margin:0 auto;">
+
+    <!-- Основной текстовый блок -->
+    <div class="about-main-card">
+        <p><a href="{{ url_for('main.index') }}" style="color:var(--accent);font-weight:700;text-decoration:none;">В-Банк</a> — ваш надежный финансовый партнер</p>
+        <p>Мы строим свою работу на трёх простых принципах: честность, защита и развитие.</p>
+        <p><strong>Надёжность.</strong> <a href="{{ url_for('main.index') }}" style="color:var(--accent);font-weight:700;text-decoration:none;">В-Банк</a> работает в строгом соответствии с нормативами Центрального Банка и входит в систему страхования вкладов. Это значит, что ваши средства всегда под защитой государства, а многолетний опыт и устойчивое положение на рынке позволяют нам с уверенностью смотреть в будущее.</p>
+        <p><strong>Современность.</strong> Мы идём в ногу со временем. Мгновенные переводы и цифровые сервисы делают управление финансами простым и быстрым. При этом многоуровневая система защиты данных гарантирует полную безопасность каждой операции.</p>
+        <p><strong>Прозрачность.</strong> Мы не любим сложных схем и скрытых комиссий. Наши условия понятны с первого взгляда, а тарифы остаются честными на протяжении всего сотрудничества. Вы всегда знаете, на что рассчитывать.</p>
+        <p><a href="{{ url_for('main.index') }}" style="color:var(--accent);font-weight:700;text-decoration:none;">В-Банк</a> — это больше, чем просто банк. Это спокойствие и уверенность для вас и вашего бизнеса.</p>
+    </div>
+
+    <!-- Q&A блоки -->
+    <div class="about-qa-card about-qa-question">Почему мне стоит выбрать именно ваш банк?</div>
+    <div class="about-qa-card about-qa-answer">Потому что мы относимся к вашим деньгам так же трепетно, как вы сами. Никакого формального подхода — только честные условия, прозрачные тарифы и забота о каждом клиенте. Мы здесь, чтобы вы чувствовали себя спокойно и уверенно.</div>
+
+    <div class="about-qa-card about-qa-question">А вы точно не разоритесь?</div>
+    <div class="about-qa-card about-qa-answer">Точно. Мы работаем ответственно, не рискуем вашими средствами и строго соблюдаем все требования Центрального Банка. К тому же мы входим в систему страхования вкладов — ваши деньги под защитой государства. Так что спите спокойно.</div>
+
+    <div class="about-qa-card about-qa-question">У вас есть скрытые комиссии, о которых я узнаю в самый последний момент?</div>
+    <div class="about-qa-card about-qa-answer">Нет и ещё раз нет! Мы терпеть не можем сюрпризы в виде внезапных списаний. Все наши условия открыты и понятны с первого дня. Если вы за что-то платите — вы знаете, за что. Честное слово.</div>
+
+    <div class="about-qa-card about-qa-question">А если я живу в другом городе или часто путешествую?</div>
+    <div class="about-qa-card about-qa-answer">Мы всегда с вами, где бы вы ни находились. Сайт работает без перебоев, переводы доходят мгновенно, а поддержка ответит в любое время суток. Банк в кармане — это про нас.</div>
+
+    <div class="about-qa-card about-qa-question">Что будет с моими деньгами, если в стране кризис?</div>
+    <div class="about-qa-card about-qa-answer">Мы проходили через разные времена и всегда выполняли свои обязательства. Наш подход — консервативный и осторожный: мы не играем в опасные игры с вашими средствами. Плюс государственная страховка вкладов. Так что даже в неспокойные времена ваши деньги в безопасности.</div>
+
+    <div class="about-qa-card about-qa-question">Чем вы лучше других банков?</div>
+    <div class="about-qa-card about-qa-answer">Мы не гонимся за тем, чтобы быть лучше всех. Мы просто хотим быть лучшими для вас. Это значит — слышать, помогать и не создавать проблем там, где их можно не создавать. Если для вас это важно — нам по пути.</div>
+
+</div>
+
+<style>
+.about-main-card {
+    width: 1313px;
+    max-width: calc(100vw - 40px);
+    min-height: 878px;
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 8px 32px rgba(74,127,212,0.16), inset 0 1px 0 rgba(255,255,255,0.85);
+    border-radius: 47px;
+    padding: 60px 80px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text);
+}
+.about-qa-card {
+    width: 1313px;
+    max-width: calc(100vw - 40px);
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 8px 32px rgba(74,127,212,0.16), inset 0 1px 0 rgba(255,255,255,0.85);
+    border-radius: 47px;
+    padding: 36px 60px;
+    box-sizing: border-box;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text);
+}
+.about-qa-question {
+    font-weight: 600;
+}
+.about-qa-answer {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

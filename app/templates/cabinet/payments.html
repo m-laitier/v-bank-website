@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:320px;height:320px;bottom:-80px;right:-80px;opacity:.45;"></div>
+<div class="blob" style="width:160px;height:160px;top:40px;left:-50px;opacity:.30;"></div>
+{% endblock %}
+
+{% block nav_links %}
+<a href="{{ url_for('cabinet.profile') }}" class="accent">{{ user_name }}</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;gap:32px;padding:36px 52px 60px;max-width:1100px;margin:0 auto;flex-wrap:wrap;align-items:flex-start;">
+
+    <!-- LEFT: счета (как в кабинете) -->
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:220px;flex:0 0 auto;width:240px;">
+
+        <!-- RUB счёт -->
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:18px 20px;">
+            <div class="icon-circle" style="font-size:16px;font-weight:900;color:var(--blue-dark);width:36px;height:36px;">₽</div>
+            <div>
+                <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:17px;">
+                    {{ '{:,.2f}'.format(user.accounts.rub).replace(',', ' ') }} ₽
+                </div>
+                <div style="font-size:11px;color:var(--text-secondary);font-weight:600;">RUB_(1)</div>
+            </div>
+        </div>
+
+        <!-- USD счёт -->
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:18px 20px;">
+            <div class="icon-circle" style="font-size:16px;font-weight:900;color:var(--blue-dark);width:36px;height:36px;">$</div>
+            <div>
+                <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:17px;">
+                    {{ '{:,.2f}'.format(user.accounts.rub2).replace(',', ' ') }} $
+                </div>
+                <div style="font-size:11px;color:var(--text-secondary);font-weight:600;">USD_(1)</div>
+            </div>
+        </div>
+
+        <!-- Траты -->
+        <div class="card" style="padding:18px 20px;">
+            <div style="font-size:11px;color:var(--text-secondary);font-weight:600;">Трат в этом месяце</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;margin-top:4px;">
+                {{ '{:,.0f}'.format(monthly_spent).replace(',', ' ') }} ₽
+            </div>
+        </div>
+
+        <!-- Перевод -->
+        <a href="{{ url_for('cabinet.transfer') }}" class="nav-tile" style="text-decoration:none;padding:18px 20px;">
+            <div style="font-size:20px;">📞</div>
+            <div style="font-weight:700;font-size:14px;">Перевод по номеру</div>
+        </a>
+
+    </div>
+
+    <!-- RIGHT: панели платежей -->
+    <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:0;">
+
+        <!-- Заголовок с крестиком (крестик = назад в кабинет) -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;">
+            <h1 id="panel-title" style="font-size:28px;">Регулярные платежи</h1>
+            <a href="{{ url_for('cabinet.cabinet') }}" style="font-size:20px;color:var(--text-secondary);text-decoration:none;font-weight:300;line-height:1;" title="Закрыть">×</a>
+        </div>
+
+        <!-- ГЛАВНЫЙ ЭКРАН: кнопки выбора -->
+        <div id="screen-main" style="display:flex;flex-direction:column;gap:14px;max-width:400px;">
+            <button class="btn btn-ghost" onclick="showScreen('add')" style="text-align:center;padding:18px;font-size:16px;font-weight:700;width:100%;">
+                Добавить автоплатёж
+            </button>
+            <button class="btn btn-ghost" onclick="showScreen('list')" style="text-align:center;padding:18px;font-size:16px;font-weight:700;width:100%;">
+                Мои автоплатежи
+            </button>
+        </div>
+
+        <!-- ЭКРАН: Добавить автоплатёж -->
+        <div id="screen-add" style="display:none;flex-direction:column;gap:20px;max-width:400px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <h2 id="add-title" style="font-size:22px;">Добавить автоплатёж</h2>
+                <button onclick="showScreen('main')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-secondary);font-weight:300;line-height:1;">×</button>
+            </div>
+
+            <div class="card" style="display:flex;flex-direction:column;gap:16px;">
+                <div class="field">
+                    <label>Номер получателя</label>
+                    <input id="ap-phone" type="text" placeholder="+79991234567">
+                </div>
+                <div class="field">
+                    <label>Сумма автоплатежа</label>
+                    <input id="ap-amount" type="number" min="0.01" step="0.01" placeholder="0.00">
+                </div>
+                <div class="field">
+                    <label>Дата автоплатежа</label>
+                    <input id="ap-date" type="date">
+                </div>
+                <div id="add-msg" class="msg"></div>
+                <button class="btn btn-primary" onclick="addPayment()" style="width:100%;">Добавить автоплатёж</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН: Мои автоплатежи -->
+        <div id="screen-list" style="display:none;flex-direction:column;gap:20px;max-width:480px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <h2 style="font-size:22px;">Мои автоплатежи</h2>
+                <button onclick="showScreen('main')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-secondary);font-weight:300;line-height:1;">×</button>
+            </div>
+            <div id="list-container"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('ap-date').min = new Date().toISOString().split('T')[0];
+});
+
+function showScreen(name) {
+    document.getElementById('screen-main').style.display = name === 'main' ? 'flex' : 'none';
+    document.getElementById('screen-add').style.display  = name === 'add'  ? 'flex' : 'none';
+    document.getElementById('screen-list').style.display = name === 'list' ? 'flex' : 'none';
+    if (name === 'list') loadPayments();
+}
+
+function showMsg(id, text, ok) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
+}
+
+function addPayment() {
+    const phone  = document.getElementById('ap-phone').value.trim();
+    const amount = document.getElementById('ap-amount').value.trim();
+    const date   = document.getElementById('ap-date').value;
+    if (!phone || !amount || !date) { showMsg('add-msg', 'Заполните все поля', false); return; }
+    const fd = new FormData();
+    fd.append('phone', phone); fd.append('amount', amount); fd.append('date', date);
+    fd.append('csrf_token', CSRF_TOKEN);
+    fetch('/cabinet/autopayments/add', { method: 'POST', body: fd })
+        .then(r => r.json()).then(data => {
+            showMsg('add-msg', data.message, data.success);
+            if (data.success) {
+                document.getElementById('ap-phone').value = '';
+                document.getElementById('ap-amount').value = '';
+                document.getElementById('ap-date').value = '';
+            }
+        });
+}
+
+function loadPayments() {
+    const c = document.getElementById('list-container');
+    c.innerHTML = '<p style="color:var(--text-secondary);font-size:15px;font-weight:600;padding:10px 0;">Загрузка…</p>';
+    fetch('/cabinet/autopayments/list').then(r => r.json()).then(data => {
+        if (!data.payments || !data.payments.length) {
+            c.innerHTML = '<p style="color:var(--text-secondary);font-size:22px;font-weight:700;padding:24px 0;">Автоплатежей нет</p>';
+            return;
+        }
+        const today = new Date().toISOString().split('T')[0];
+        c.innerHTML = '<div style="display:flex;flex-direction:column;gap:16px;">' +
+            data.payments.map((p, i) => `
+            <div class="ap-card" id="ap-${i}" style="position:relative;">
+                <!-- Кнопка удаления (красный кружок) -->
+                <button onclick="delPayment(${i})" style="position:absolute;top:12px;right:12px;background:#ef4444;border:none;cursor:pointer;width:22px;height:22px;border-radius:50%;color:white;font-size:14px;font-weight:900;line-height:1;display:flex;align-items:center;justify-content:center;" title="Удалить">−</button>
+
+                <!-- Номер получателя -->
+                <div class="field">
+                    <label style="font-size:12px;color:var(--text-secondary);">Номер получателя</label>
+                    <div class="profile-field-display" style="font-size:14px;padding:10px 14px;">${esc(p.phone)}</div>
+                </div>
+
+                <!-- Сумма -->
+                <div class="field">
+                    <label style="font-size:12px;color:var(--text-secondary);">Сумма автоплатежа</label>
+                    <div id="v-amount-row-${i}" class="profile-field-row">
+                        <div class="profile-field-display" id="v-amount-${i}" style="font-size:14px;padding:10px 14px;">${esc(p.amount)} ₽</div>
+                        <button class="profile-edit-btn" onclick="editF(${i},'amount')" style="font-size:16px;">✏️</button>
+                    </div>
+                    <div id="e-amount-${i}" style="display:none;flex-direction:column;gap:8px;">
+                        <input class="field input" id="inp-amount-${i}" type="number" min="0.01" step="0.01" value="${p.amount}" style="background:rgba(240,244,252,0.55);border:1px solid rgba(255,255,255,0.6);border-radius:14px;padding:10px 14px;font-size:14px;outline:none;width:100%;">
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-primary btn-sm" onclick="saveF(${i},'amount')">Сохранить</button>
+                            <button class="btn btn-ghost btn-sm" onclick="cancelF(${i},'amount')">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Дата -->
+                <div class="field">
+                    <label style="font-size:12px;color:var(--text-secondary);">Дата автоплатежа</label>
+                    <div id="v-date-row-${i}" class="profile-field-row">
+                        <div class="profile-field-display" id="v-date-${i}" style="font-size:14px;padding:10px 14px;">${esc(p.date)}</div>
+                        <button class="profile-edit-btn" onclick="editF(${i},'date')" style="font-size:16px;">✏️</button>
+                    </div>
+                    <div id="e-date-${i}" style="display:none;flex-direction:column;gap:8px;">
+                        <input class="field input" id="inp-date-${i}" type="date" value="${p.date_iso}" min="${today}" style="background:rgba(240,244,252,0.55);border:1px solid rgba(255,255,255,0.6);border-radius:14px;padding:10px 14px;font-size:14px;outline:none;width:100%;">
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-primary btn-sm" onclick="saveF(${i},'date')">Сохранить</button>
+                            <button class="btn btn-ghost btn-sm" onclick="cancelF(${i},'date')">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="item-msg-${i}" class="msg"></div>
+            </div>`).join('') + '</div>';
+    });
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function editF(i, f) {
+    document.getElementById(`v-${f}-row-${i}`).style.display = 'none';
+    document.getElementById(`e-${f}-${i}`).style.display = 'flex';
+}
+function cancelF(i, f) {
+    document.getElementById(`e-${f}-${i}`).style.display = 'none';
+    document.getElementById(`v-${f}-row-${i}`).style.display = 'flex';
+}
+function saveF(i, f) {
+    const val = document.getElementById(`inp-${f}-${i}`).value.trim();
+    const fd = new FormData();
+    fd.append('index', i); fd.append('field', f); fd.append('value', val);
+    fd.append('csrf_token', CSRF_TOKEN);
+    fetch('/cabinet/autopayments/edit', { method: 'PATCH', body: fd })
+        .then(r => r.json()).then(data => {
+            const el = document.getElementById(`item-msg-${i}`);
+            el.textContent = data.message;
+            el.className = 'msg ' + (data.success ? 'msg-ok' : 'msg-err');
+            if (data.success) loadPayments();
+        });
+}
+function delPayment(i) {
+    if (!confirm('Удалить этот автоплатёж?')) return;
+    const fd = new FormData();
+    fd.append('index', i);
+    fd.append('csrf_token', CSRF_TOKEN);
+    fetch('/cabinet/autopayments/delete', { method: 'DELETE', body: fd })
+        .then(r => r.json()).then(data => { if (data.success) loadPayments(); });
+}
+</script>
+{% endblock %}

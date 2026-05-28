@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:360px;height:360px;bottom:-80px;right:-100px;opacity:.45;"></div>
+<div class="blob" style="width:200px;height:200px;top:40px;left:-60px;opacity:.35;"></div>
+{% endblock %}
+
+{% block nav_links %}
+<a href="{{ url_for('cabinet.profile') }}" class="accent">Профиль</a>
+{% endblock %}
+
+{% block content %}
+{#
+  Grid: col1=503px, col2=216px, col3=485px, gap=24px, total=1252px
+  Row1: RUB | Регплатежи | Накопительный
+  Row2: USD | RIGHT-PANEL (col2/4, row2/4)
+  Row3: Траты+Перевод |
+  
+  Траты+Перевод: col1(503px) = flex, Траты=216px, Перевод=263px → правый край совпадает с col1
+#}
+<div style="padding:36px 80px 60px;display:flex;justify-content:center;">
+<div id="main-grid" style="display:grid;
+            grid-template-columns:472px 216px 485px;
+            grid-template-rows:216px 216px 216px;
+            gap:40px;
+            width:1253px;
+            flex-shrink:0;
+            position:relative;">
+
+    <!-- RUB_(1): col1 row1 -->
+    <div class="card" style="border-radius:47px;grid-column:1;grid-row:1;
+                              display:flex;align-items:flex-start;justify-content:flex-start;gap:20px;padding:32px 40px;">
+        <div class="icon-circle" style="font-size:22px;font-weight:900;color:var(--blue-dark);width:54px;height:54px;flex-shrink:0;">₽</div>
+        <div>
+            <div style="font-size:13px;color:var(--text-secondary);font-weight:600;margin-bottom:4px;">RUB_(1)</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:26px;">
+                {{ '{:,.2f}'.format(user.accounts.rub).replace(',', ' ') }} ₽
+            </div>
+        </div>
+    </div>
+
+    <!-- Регулярные платежи: col2 row1 (скрывается при открытии панели) -->
+    <div class="nav-tile" id="payments-tile"
+         style="border-radius:47px;grid-column:2;grid-row:1;
+                display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+                padding:24px;cursor:pointer;"
+         onclick="openPaymentsInline()">
+        <div style="font-size:32px;">🗓</div>
+        <div style="font-weight:700;font-size:20px;text-align:left;">Регулярные<br>платежи</div>
+    </div>
+
+    <!-- Накопительный счёт: col3 row1 (скрывается при открытии панелей) -->
+    <div class="card" id="savings-card"
+         style="border-radius:47px;grid-column:3;grid-row:1;
+                display:flex;align-items:flex-start;justify-content:space-between;padding:32px 36px;">
+        <div>
+            <div style="font-size:13px;color:var(--text-secondary);font-weight:600;">Накопительный счёт (RUB), «Процент 2026»</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;margin-top:8px;">
+                {{ '{:,.2f}'.format(user.accounts.get('savings', 0)).replace(',', ' ') }} ₽
+            </div>
+        </div>
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:32px;color:var(--accent);flex-shrink:0;margin-left:16px;">11%</div>
+    </div>
+
+    <!-- USD_(1): col1 row2 -->
+    <div class="card" style="border-radius:47px;grid-column:1;grid-row:2;
+                              display:flex;align-items:flex-start;justify-content:flex-start;gap:20px;padding:32px 40px;">
+        <div class="icon-circle" style="font-size:22px;font-weight:900;color:var(--blue-dark);width:54px;height:54px;flex-shrink:0;">₽</div>
+        <div>
+            <div style="font-size:13px;color:var(--text-secondary);font-weight:600;margin-bottom:4px;">RUB_(2)</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:26px;">
+                {{ '{:,.2f}'.format(user.accounts.rub2).replace(',', ' ') }} ₽
+            </div>
+        </div>
+    </div>
+
+    <!-- Траты + Перевод: col1 row3
+         503px = Траты(216) + gap(24) + Перевод(263) → правый край совпадает с col1 -->
+    <div style="grid-column:1;grid-row:3;display:flex;gap:40px;">
+
+        <!-- Траты: 216×216 -->
+        <a href="{{ url_for('cabinet.transactions') }}" class="nav-tile"
+           style="border-radius:47px;text-decoration:none;width:216px;height:216px;flex-shrink:0;
+                  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:24px;">
+            <div style="font-size:32px;">⏲</div>
+            <div>
+                <div style="font-size:17px;color:var(--text-secondary);font-weight:600;text-align:left;">Трат в этом месяце</div>
+                <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:17px;margin-top:2px;">
+                    {{ '{:,.0f}'.format(monthly_spent).replace(',', ' ') }} ₽
+                </div>
+            </div>
+        </a>
+
+        <!-- Перевод: 216×216, margin-left:auto прижимает к правому краю col1(503px) -->
+        <a href="{{ url_for('cabinet.transfer') }}" class="nav-tile"
+           style="border-radius:47px;text-decoration:none;width:216px;height:216px;flex-shrink:0;margin-left:auto;
+                  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:24px;">
+            <div style="font-size:32px;">✆</div>
+            <div style="font-weight:700;font-size:20px;text-align:left;">Перевод по<br>номеру</div>
+        </a>
+
+    </div>
+
+    <!-- RIGHT PANEL CONTAINER: col2-4 row2-4 (normal state)
+         При раскрытии — переключается на col2-4 row1-4 через JS -->
+    <div id="right-panel-wrap"
+         style="grid-column:2/4;grid-row:2/4;position:relative;">
+
+        <!-- КЭШБЭК+ПАРТНЁРЫ (default) -->
+        <div id="cashback-partners-block" class="card"
+             style="border-radius:47px;position:absolute;inset:0;
+                    display:flex;flex-direction:column;gap:20px;padding:32px 36px;overflow:auto;">
+            <div>
+                <h2 style="font-size:33px;margin-bottom:12px;">Выбрать категории кэшбэка</h2>
+                {% if user.cashback_categories %}
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        {% set labels = {'all':'1% Все покупки','restaurants':'3% Рестораны','education':'2% Образование','partners':'5% У партнёров','travel':'7% Путешествия'} %}
+                        {% for cat in user.cashback_categories %}
+                            <span style="background:rgba(240,244,252,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.6);border-radius:50px;padding:7px 18px;font-weight:700;font-size:14px;">{{ labels.get(cat, cat) }}</span>
+                        {% endfor %}
+                    </div>
+                    <button onclick="openCashbackInline()" class="btn btn-outline btn-sm" style="margin-top:12px;">Изменить категории</button>
+                {% else %}
+                    <button onclick="openCashbackInline()" class="btn btn-outline" style="width:fit-content;">Выбрать категории</button>
+                {% endif %}
+            </div>
+            <div style="border-top:1px solid rgba(74,127,212,0.12);"></div>
+            <div>
+                <h2 style="font-size:20px;margin-bottom:16px;">Партнёры банка</h2>
+                <div class="partners-grid">
+                    <img class="partner-logo" src="{{ url_for('static', filename='images/photos/card6.png') }}" alt="Партнёр">
+                    <img class="partner-logo partner-logo-wide" src="{{ url_for('static', filename='images/photos/card7.png') }}" alt="ÆRA">
+                    <img class="partner-logo" src="{{ url_for('static', filename='images/photos/card8.png') }}" alt="АМАМ">
+                    <img class="partner-logo partner-logo-wide" src="{{ url_for('static', filename='images/photos/card9.png') }}" alt="Holds N' Rocks">
+                </div>
+            </div>
+        </div>
+
+        <!-- КЭШБЭК inline редактор -->
+        <div id="cashback-inline-panel" style="display:none;position:absolute;inset:0;">
+            <div class="card" style="border-radius:47px;position:absolute;inset:0;
+                         display:flex;flex-direction:column;gap:16px;padding:32px 36px;overflow:auto;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h2 style="font-size:22px;">Категории кэшбэка</h2>
+                    <button onclick="closeCashbackInline()" style="background:none;border:none;cursor:pointer;font-size:24px;color:var(--text-secondary);">✕</button>
+                </div>
+                <p style="font-size:14px;font-weight:600;color:var(--text-secondary);">Выберите ровно 3 категории</p>
+                <div id="cb-msg-inline" class="msg" style="display:none;"></div>
+                <div id="cb-options-inline" style="display:flex;flex-direction:column;gap:12px;">
+                    {% set options = [
+                        ('all','1','Все покупки'),
+                        ('restaurants','3','Рестораны'),
+                        ('education','2','Образование'),
+                        ('partners','5','У партнёров'),
+                        ('travel','7','Путешествия'),
+                    ] %}
+                    {% for key, pct, label in options %}
+                    {% set checked = key in (user.cashback_categories or []) %}
+                    <div class="cb-option {% if checked %}checked{% endif %}" id="cb-opt-{{ key }}" data-key="{{ key }}">
+                        <div class="cb-check">{% if checked %}✓{% endif %}</div>
+                        <span class="cb-pct">{{ pct }}%</span>
+                        <span>{{ label }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary" onclick="saveCashbackInline()" style="width:100%;margin-top:auto;">Сохранить</button>
+            </div>
+        </div>
+
+        <!-- ПЛАТЕЖИ inline -->
+        <div id="payments-inline-panel" style="display:none;position:absolute;inset:0;">
+            <div class="card" style="border-radius:47px;position:absolute;inset:0;
+                         display:flex;flex-direction:column;gap:20px;padding:32px 36px;overflow:auto;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h2 style="font-size:22px;">Регулярные платежи</h2>
+                    <button onclick="closePaymentsInline()" style="background:none;border:none;cursor:pointer;font-size:24px;color:var(--text-secondary);">✕</button>
+                </div>
+                <div id="pay-screen-main" style="display:flex;flex-direction:column;gap:14px;">
+                    <button class="btn btn-ghost" onclick="showPayScreen('add')" style="padding:18px;font-size:16px;font-weight:700;width:100%;">Добавить автоплатёж</button>
+                    <button class="btn btn-ghost" onclick="showPayScreen('list')" style="padding:18px;font-size:16px;font-weight:700;width:100%;">Мои автоплатежи</button>
+                </div>
+                <div id="pay-screen-add" style="display:none;flex-direction:column;gap:14px;">
+                    <button onclick="showPayScreen('main')" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:600;text-align:left;padding:0;width:fit-content;">← Назад</button>
+                    <div class="field"><label>Номер получателя</label><input id="ap-phone" type="text" placeholder="+79991234567"></div>
+                    <div class="field"><label>Сумма автоплатежа</label><input id="ap-amount" type="number" min="0.01" step="0.01" placeholder="0.00"></div>
+                    <div class="field"><label>Дата</label><input id="ap-date" type="date"></div>
+                    <div id="add-msg" class="msg"></div>
+                    <button class="btn btn-primary" onclick="addPayment()" style="width:100%;">Добавить</button>
+                </div>
+                <div id="pay-screen-list" style="display:none;flex-direction:column;gap:12px;">
+                    <button onclick="showPayScreen('main')" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:600;text-align:left;padding:0;width:fit-content;">← Назад</button>
+                    <div id="pay-list-container"></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /right-panel-wrap -->
+
+</div><!-- /main-grid -->
+</div>
+
+<script id="cb-data" type="application/json">{{ (user.cashback_categories or []) | tojson }}</script>
+<script>
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+let cbSelected = new Set(JSON.parse(document.getElementById('cb-data').textContent));
+
+// ── helpers to expand/collapse right panel ──
+function expandPanel() {
+    // Hide row1 col2 and col3 tiles
+    document.getElementById('payments-tile').style.visibility = 'hidden';
+    document.getElementById('savings-card').style.visibility = 'hidden';
+    // Expand wrap to cover row1-3
+    const wrap = document.getElementById('right-panel-wrap');
+    wrap.style.gridRow = '1/4';
+    wrap.style.gridColumn = '2/4';
+}
+function collapsePanel() {
+    document.getElementById('payments-tile').style.visibility = 'visible';
+    document.getElementById('savings-card').style.visibility = 'visible';
+    const wrap = document.getElementById('right-panel-wrap');
+    wrap.style.gridRow = '2/4';
+    wrap.style.gridColumn = '2/4';
+}
+
+// ── Cashback ──
+function openCashbackInline() {
+    expandPanel();
+    document.getElementById('cashback-partners-block').style.display = 'none';
+    document.getElementById('cashback-inline-panel').style.display = 'block';
+    updateCBDisabled();
+}
+function closeCashbackInline() {
+    collapsePanel();
+    document.getElementById('cashback-inline-panel').style.display = 'none';
+    document.getElementById('cashback-partners-block').style.display = 'flex';
+}
+
+// ── Payments ──
+function openPaymentsInline() {
+    expandPanel();
+    document.getElementById('cashback-partners-block').style.display = 'none';
+    document.getElementById('payments-inline-panel').style.display = 'block';
+    showPayScreen('main');
+}
+function closePaymentsInline() {
+    collapsePanel();
+    document.getElementById('payments-inline-panel').style.display = 'none';
+    document.getElementById('cashback-partners-block').style.display = 'flex';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('ap-date').min = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('#cb-options-inline .cb-option').forEach(function(div) {
+        div.onclick = function() {
+            if (div.classList.contains('disabled-opt')) return;
+            const key = div.dataset.key;
+            const check = div.querySelector('.cb-check');
+            if (cbSelected.has(key)) {
+                cbSelected.delete(key); div.classList.remove('checked'); check.textContent = '';
+            } else {
+                if (cbSelected.size >= 3) return;
+                cbSelected.add(key); div.classList.add('checked'); check.textContent = '✓';
+            }
+            updateCBDisabled();
+        };
+    });
+});
+
+function updateCBDisabled() {
+    document.querySelectorAll('#cb-options-inline .cb-option').forEach(function(opt) {
+        opt.classList.toggle('disabled-opt', cbSelected.size >= 3 && !cbSelected.has(opt.dataset.key));
+    });
+}
+
+function saveCashbackInline() {
+    const msgEl = document.getElementById('cb-msg-inline');
+    if (cbSelected.size !== 3) {
+        msgEl.textContent = 'Необходимо выбрать ровно 3 категории';
+        msgEl.className = 'msg msg-err'; msgEl.style.display = 'block'; return;
+    }
+    const fd = new FormData();
+    cbSelected.forEach(c => fd.append('categories', c));
+    fd.append('csrf_token', CSRF_TOKEN);
+    fetch('/cabinet/cashback', { method: 'POST', body: fd }).then(r => r.text()).then(() => {
+        msgEl.textContent = 'Сохранено!'; msgEl.className = 'msg msg-ok'; msgEl.style.display = 'block';
+        setTimeout(() => window.location.reload(), 900);
+    });
+}
+
+function showPayScreen(name) {
+    ['main','add','list'].forEach(s => {
+        document.getElementById('pay-screen-' + s).style.display = s === name ? 'flex' : 'none';
+    });
+    if (name === 'list') loadPayments();
+}
+
+function addPayment() {
+    const phone = document.getElementById('ap-phone').value.trim();
+    const amount = document.getElementById('ap-amount').value.trim();
+    const date = document.getElementById('ap-date').value;
+    if (!phone || !amount || !date) { showMsg('add-msg','Заполните все поля',false); return; }
+    const fd = new FormData();
+    fd.append('phone', phone); fd.append('amount', amount); fd.append('date', date); fd.append('csrf_token', CSRF_TOKEN);
+    fetch('/cabinet/autopayments/add', { method:'POST', body:fd }).then(r=>r.json()).then(data => {
+        showMsg('add-msg', data.message, data.success);
+        if (data.success) { document.getElementById('ap-phone').value=''; document.getElementById('ap-amount').value=''; document.getElementById('ap-date').value=''; }
+    });
+}
+
+function loadPayments() {
+    const c = document.getElementById('pay-list-container');
+    c.innerHTML = '<p style="color:var(--text-secondary);font-size:14px;">Загрузка…</p>';
+    fetch('/cabinet/autopayments/list').then(r=>r.json()).then(data => {
+        if (!data.payments || !data.payments.length) {
+            c.innerHTML = '<p style="color:var(--text-secondary);font-size:20px;font-weight:700;padding:16px 0;">Автоплатежей нет</p>'; return;
+        }
+        const today = new Date().toISOString().split('T')[0];
+        c.innerHTML = '<div style="display:flex;flex-direction:column;gap:14px;">' +
+            data.payments.map((p,i) => `
+            <div class="ap-card" id="ap-${i}" style="position:relative;border-radius:20px;">
+                <button onclick="delPayment(${i})" style="position:absolute;top:10px;right:10px;background:#ef4444;border:none;cursor:pointer;width:20px;height:20px;border-radius:50%;color:white;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;" title="Удалить">−</button>
+                <div class="field"><label style="font-size:11px;color:var(--text-secondary);">Номер получателя</label><div class="profile-field-display" style="font-size:13px;padding:8px 12px;">${esc(p.phone)}</div></div>
+                <div class="field"><label style="font-size:11px;color:var(--text-secondary);">Сумма</label>
+                    <div id="v-amount-row-${i}" class="profile-field-row"><div class="profile-field-display" id="v-amount-${i}" style="font-size:13px;padding:8px 12px;">${esc(p.amount)} ₽</div><button class="profile-edit-btn" onclick="editF(${i},'amount')" style="font-size:14px;">✏️</button></div>
+                    <div id="e-amount-${i}" style="display:none;flex-direction:column;gap:6px;"><input id="inp-amount-${i}" type="number" min="0.01" step="0.01" value="${p.amount}" style="background:rgba(240,244,252,0.55);border:1px solid rgba(255,255,255,0.6);border-radius:10px;padding:8px 12px;font-size:13px;outline:none;width:100%;"><div style="display:flex;gap:6px;"><button class="btn btn-primary btn-sm" onclick="saveF(${i},'amount')">OK</button><button class="btn btn-ghost btn-sm" onclick="cancelF(${i},'amount')">✕</button></div></div></div>
+                <div class="field"><label style="font-size:11px;color:var(--text-secondary);">Дата</label>
+                    <div id="v-date-row-${i}" class="profile-field-row"><div class="profile-field-display" id="v-date-${i}" style="font-size:13px;padding:8px 12px;">${esc(p.date)}</div><button class="profile-edit-btn" onclick="editF(${i},'date')" style="font-size:14px;">✏️</button></div>
+                    <div id="e-date-${i}" style="display:none;flex-direction:column;gap:6px;"><input id="inp-date-${i}" type="date" value="${p.date_iso}" min="${today}" style="background:rgba(240,244,252,0.55);border:1px solid rgba(255,255,255,0.6);border-radius:10px;padding:8px 12px;font-size:13px;outline:none;width:100%;"><div style="display:flex;gap:6px;"><button class="btn btn-primary btn-sm" onclick="saveF(${i},'date')">OK</button><button class="btn btn-ghost btn-sm" onclick="cancelF(${i},'date')">✕</button></div></div></div>
+                <div id="item-msg-${i}" class="msg"></div>
+            </div>`).join('') + '</div>';
+    });
+}
+
+function showMsg(id,text,ok){const el=document.getElementById(id);el.textContent=text;el.className='msg '+(ok?'msg-ok':'msg-err');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function editF(i,f){document.getElementById(`v-${f}-row-${i}`).style.display='none';document.getElementById(`e-${f}-${i}`).style.display='flex';}
+function cancelF(i,f){document.getElementById(`e-${f}-${i}`).style.display='none';document.getElementById(`v-${f}-row-${i}`).style.display='flex';}
+function saveF(i,f){
+    const val=document.getElementById(`inp-${f}-${i}`).value.trim();
+    const fd=new FormData();fd.append('index',i);fd.append('field',f);fd.append('value',val);fd.append('csrf_token',CSRF_TOKEN);
+    fetch('/cabinet/autopayments/edit',{method:'PATCH',body:fd}).then(r=>r.json()).then(data=>{
+        const el=document.getElementById(`item-msg-${i}`);el.textContent=data.message;el.className='msg '+(data.success?'msg-ok':'msg-err');
+        if(data.success)loadPayments();
+    });
+}
+function delPayment(i){
+    if(!confirm('Удалить этот автоплатёж?'))return;
+    const fd=new FormData();fd.append('index',i);fd.append('csrf_token',CSRF_TOKEN);
+    fetch('/cabinet/autopayments/delete',{method:'DELETE',body:fd}).then(r=>r.json()).then(data=>{if(data.success)loadPayments();});
+}
+</script>
+{% endblock %}

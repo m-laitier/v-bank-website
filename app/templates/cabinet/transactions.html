@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:320px;height:320px;bottom:-80px;right:-80px;opacity:.45;"></div>
+<div class="blob" style="width:180px;height:180px;top:40px;left:-50px;opacity:.30;"></div>
+{% endblock %}
+
+{% block nav_links %}
+<a href="{{ url_for('cabinet.profile') }}" class="accent">{{ user_name }}</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px 60px;gap:24px;">
+
+    <div style="display:flex;align-items:center;gap:8px;width:100%;max-width:580px;justify-content:center;">
+        <a href="{{ url_for('cabinet.cabinet') }}" class="back-link" style="font-size:16px;">◀</a>
+        <h1 style="font-size:30px;">История операций</h1>
+    </div>
+
+    <div style="width:100%;max-width:580px;display:flex;flex-direction:column;gap:10px;">
+        {% if transactions %}
+            {% for tx in transactions|reverse %}
+            <div class="tx-row">
+                <div>
+                    {% if tx.type == 'debit' %}
+                        <div class="tx-phone">→ {{ tx.recipient_phone }}</div>
+                        <div class="tx-type">Перевод</div>
+                    {% else %}
+                        <div class="tx-phone">← {{ tx.from_phone }}</div>
+                        <div class="tx-type">Пополнение</div>
+                    {% endif %}
+                    <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">{{ tx.date }}</div>
+                </div>
+                <div class="tx-amount" style="color:{% if tx.type == 'debit' %}#dc2626{% else %}#16a34a{% endif %};">
+                    {% if tx.type == 'debit' %}−{% else %}+{% endif %}{{ '{:,.2f}'.format(tx.amount).replace(',', ' ') }} ₽
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="text-align:center;padding:40px;">
+                <p style="color:var(--text-secondary);font-size:15px;font-weight:600;">Операций пока нет</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

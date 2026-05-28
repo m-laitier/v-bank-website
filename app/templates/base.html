@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>В-Банк</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+
+<div class="blobs">
+    {% block blobs %}
+    <div class="blob" style="width:380px;height:380px;bottom:-100px;left:-120px;"></div>
+    <div class="blob" style="width:240px;height:240px;top:50px;right:80px;opacity:.55;"></div>
+    <div class="blob" style="width:140px;height:140px;top:20px;right:360px;opacity:.30;"></div>
+    {% endblock %}
+</div>
+
+{% block full_page %}
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div style="display:flex;align-items:center;gap:28px;">
+        <a class="navbar-logo" href="{{ url_for('main.index') }}">
+            <img style="transform: scale(6); margin-right: 50px; margin-left: 25px; margin-bottom: -2px;" class="logo-img" src="{{ url_for('static', filename='images/photos/card5.png') }}" alt="В-Банк">
+        </a>
+        <a href="{{ url_for('main.about') }}" style="text-decoration:none;font-weight:700;font-size:25px;color:var(--text-secondary);transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-secondary)'">О банке</a>
+    </div>
+    <div class="navbar-links">
+        {% block nav_links %}
+        {% if user_name %}
+            <a href="{{ url_for('cabinet.cabinet') }}" class="accent">{{ user_name }}</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="accent">Личный кабинет</a>
+        {% endif %}
+        {% endblock %}
+    </div>
+</nav>
+
+<div class="page">
+    {% block content %}{% endblock %}
+</div>
+
+{% endblock %}
+
+</body>
+</html>

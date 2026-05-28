@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:320px;height:320px;bottom:-60px;right:-80px;opacity:.5;"></div>
+<div class="blob" style="width:200px;height:200px;top:40px;left:-60px;opacity:.4;"></div>
+<div class="blob-rect" style="width:180px;height:180px;top:200px;right:360px;transform:rotate(20deg);opacity:.3;"></div>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;padding:32px 24px 60px;gap:24px;">
+
+    <h1 style="font-size:36px;letter-spacing:-.01em;text-align:center;">
+        Оформите карту
+        <img src="{{ url_for('static', filename='images/photos/mini-logo.png') }}" 
+            alt="Логотип" 
+            style="display:inline; vertical-align:middle; margin-left:6px; width:55px; height:55px; margin-top: -7.5px; margin-left: -2px;">
+        за минуту
+    </h1>
+
+    <!-- Info banner -->
+    <div class="card" style="max-width:580px;width:100%;display:flex;align-items:center;gap:16px;padding:20px 28px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#1a2236;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px;flex-shrink:0;">i</div>
+        <p style="font-size:15px;font-weight:600;line-height:1.5;">
+            После оформления карты личный кабинет будет создан автоматически
+        </p>
+    </div>
+
+    <!-- Main block -->
+    <div style="display:flex;gap:28px;max-width:900px;width:100%;align-items:stretch;flex-wrap:wrap;">
+
+        <!-- Left: card + hint -->
+        <div class="card" style="flex:1;min-width:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px 24px;">
+            <img src="{{ url_for('static', filename='images/photos/card2.png') }}"
+                 alt="Карта В-Банк"
+                 style="width:200px;filter:drop-shadow(0 8px 24px rgba(30,60,120,.20));">
+            <p style="text-align:center;font-size:13px;font-weight:600;line-height:1.6;color:var(--text-secondary);max-width:220px;">
+                Заполните необходимые поля.<br>
+                По указанному номеру<br>с вами свяжется менеджер
+            </p>
+        </div>
+
+        <!-- Right: form -->
+        <div class="card" style="flex:2;min-width:300px;display:flex;flex-direction:column;gap:22px;">
+            <h2 style="text-align:center;font-size:24px;">Пожалуйста, введите<br>некоторые данные</h2>
+
+            <form method="POST" style="display:flex;flex-direction:column;gap:16px;">
+                {{ form.hidden_tag() }}
+
+                <div class="field">
+                    {{ form.full_name.label }}
+                    {{ form.full_name(placeholder='Иванов Иван') }}
+                    {% for error in form.full_name.errors %}
+                        <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="field">
+                    {{ form.phone.label }}
+                    {{ form.phone(placeholder='+79991234567') }}
+                    {% for error in form.phone.errors %}
+                        <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                    <div class="field" style="flex:1;min-width:140px;">
+                        {{ form.password.label }}
+                        {{ form.password(placeholder='••••••') }}
+                        {% for error in form.password.errors %}
+                            <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="field" style="flex:1;min-width:140px;">
+                        {{ form.confirm_password.label }}
+                        {{ form.confirm_password(placeholder='••••••') }}
+                        {% for error in form.confirm_password.errors %}
+                            <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {{ form.submit(class='btn btn-primary mt-8', style='width:100%;') }}
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

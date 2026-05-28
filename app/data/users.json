@@ -1,0 +1,203 @@
+[
+    {
+        "full_name": "ваыап вап",
+        "phone": "+79168008090",
+        "password": "asd321",
+        "accounts": {
+            "rub": 149900.0,
+            "savings": 50000.0,
+            "rub2": 700.0
+        },
+        "transactions": [
+            {
+                "date": "10.05.2026 16:01",
+                "amount": 100.0,
+                "recipient_phone": "+79168008080"
+            },
+            {
+                "date": "12.05.2026 00:02",
+                "amount": 500.0,
+                "type": "debit",
+                "recipient_phone": "+79168008181"
+            },
+            {
+                "date": "27.05.2026 19:00",
+                "amount": 20000.0,
+                "type": "debit",
+                "recipient_phone": "+79168008181"
+            },
+            {
+                "date": "27.05.2026 19:12",
+                "amount": 50000.0,
+                "type": "debit",
+                "recipient_phone": "+79168008181"
+            },
+            {
+                "date": "27.05.2026 19:28",
+                "amount": 70000.0,
+                "type": "credit",
+                "from_phone": "+79168008181"
+            }
+        ],
+        "cashback_categories": [
+            "education",
+            "partners",
+            "travel"
+        ],
+        "autopayments": [
+            {
+                "phone": "+79168008181",
+                "amount": 33000.0,
+                "date": "16.07.2026",
+                "date_iso": "2026-07-16"
+            }
+        ],
+        "id": "f8822772-3ce3-499f-956c-3f420a5fffe5",
+        "is_admin": false
+    },
+    {
+        "full_name": "вапв рпавср",
+        "phone": "+79168008181",
+        "password": "asd123",
+        "accounts": {
+            "rub": 149900.0,
+            "savings": 50000.0,
+            "rub2": 1700.0
+        },
+        "transactions": [
+            {
+                "date": "09.05.2026 18:49",
+                "amount": 100.0,
+                "recipient_phone": "+79168008081"
+            },
+            {
+                "date": "12.05.2026 00:02",
+                "amount": 500.0,
+                "type": "credit",
+                "from_phone": "+79168008090"
+            },
+            {
+                "date": "27.05.2026 19:00",
+                "amount": 20000.0,
+                "type": "credit",
+                "from_phone": "+79168008090"
+            },
+            {
+                "date": "27.05.2026 19:12",
+                "amount": 50000.0,
+                "type": "credit",
+                "from_phone": "+79168008090"
+            },
+            {
+                "date": "27.05.2026 19:28",
+                "amount": 70000.0,
+                "type": "debit",
+                "recipient_phone": "+79168008090"
+            }
+        ],
+        "cashback_categories": [
+            "education",
+            "partners",
+            "travel"
+        ],
+        "autopayments": [
+            {
+                "phone": "+79168008090",
+                "amount": 1200.0,
+                "date": "15.05.2026",
+                "date_iso": "2026-05-15"
+            },
+            {
+                "phone": "+79168008090",
+                "amount": 2000.0,
+                "date": "02.06.2026",
+                "date_iso": "2026-06-02"
+            }
+        ],
+        "id": "aaa5cac3-986f-42bc-84cb-55e830d70b5c",
+        "is_admin": false
+    },
+    {
+        "full_name": "ывф ы фв",
+        "phone": "+79168888888",
+        "password": "asd123",
+        "accounts": {
+            "rub": 149177.0,
+            "savings": 50000.0,
+            "rub2": 1200.0
+        },
+        "transactions": [
+            {
+                "date": "10.05.2026 16:07",
+                "amount": 200.0,
+                "recipient_phone": "+79161231212"
+            },
+            {
+                "date": "10.05.2026 16:12",
+                "amount": 100.0,
+                "recipient_phone": "+79161231212"
+            },
+            {
+                "date": "10.05.2026 16:13",
+                "amount": 150.0,
+                "recipient_phone": "+79168008080"
+            },
+            {
+                "date": "10.05.2026 16:13",
+                "amount": 250.0,
+                "recipient_phone": "+79168008081"
+            },
+            {
+                "date": "10.05.2026 16:18",
+                "amount": 123.0,
+                "recipient_phone": "+79161231212"
+            }
+        ],
+        "id": "666f634e-e242-492c-aa36-b0c8f357bf85",
+        "is_admin": false
+    },
+    {
+        "full_name": "имя имя",
+        "phone": "+79161238080",
+        "password": "asd123",
+        "accounts": {
+            "rub": 150000.0,
+            "savings": 50000.0,
+            "rub2": 1200.0
+        },
+        "transactions": [],
+        "id": "96ff2050-7516-4862-8cc7-aee82a9bacfc",
+        "is_admin": false
+    },
+    {
+        "full_name": "Имя Фамилия",
+        "phone": "+79168008081",
+        "password": "asd123",
+        "accounts": {
+            "rub": 150000.0,
+            "rub2": 150000.0,
+            "savings": 50000.0
+        },
+        "transactions": [],
+        "cashback_categories": [
+            "partners",
+            "education",
+            "restaurants"
+        ],
+        "id": "80ee6706-33f6-4a5e-a884-8351b9dff080",
+        "is_admin": false
+    },
+    {
+        "id": "f4401f32-3daa-42e8-b597-416d12cdf1f0",
+        "full_name": "админ админ",
+        "phone": "+78888888888",
+        "password": "admin",
+        "is_admin": true,
+        "accounts": {
+            "rub": 150000.0,
+            "rub2": 150000.0,
+            "savings": 50000.0
+        },
+        "transactions": []
+    }
+]

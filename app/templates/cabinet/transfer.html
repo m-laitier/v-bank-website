@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:340px;height:340px;bottom:-80px;right:-100px;opacity:.5;"></div>
+<div class="blob" style="width:180px;height:180px;top:60px;left:60px;opacity:.35;"></div>
+{% endblock %}
+
+{% block nav_links %}
+<a href="{{ url_for('cabinet.profile') }}" class="accent">{{ user_name }}</a>
+{% endblock %}
+
+{% block content %}
+
+<div id="toast-notify">
+  <div class="toast-icon">✅</div>
+  <div class="toast-text">Перевод успешно выполнен!</div>
+</div>
+
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 48px 60px;min-height:calc(100vh - 80px);">
+
+    <!-- Заголовок со стрелкой назад -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:40px;width:100%;max-width:940px;justify-content:center;">
+        <a href="{{ url_for('cabinet.cabinet') }}" class="back-link" style="font-size:16px;">◀</a>
+        <h1 style="font-size:34px;text-align:center;margin-bottom:0;">
+            Выберите счёт для перевода
+        </h1>
+    </div>
+
+    <div style="display:flex;gap:32px;align-items:center;width:100%;max-width:900px;flex-wrap:wrap;justify-content:center;">
+
+        <!-- Left: account cards stacked -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- RUB card -->
+            <div style="position:relative;">
+                <img src="{{ url_for('static', filename='images/photos/card1.png') }}" alt=""
+                     style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:280px;z-index:0;pointer-events:none;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.18));">
+                <div class="account-card" id="card-rub" onclick="selectAccount('rub')" style="position:relative;z-index:1;">
+                    <div style="flex:1;">
+                        <div class="label">с RUB_(1)</div>
+                        <div class="amount">{{ '{:,.2f}'.format(user.accounts.rub).replace(',', ' ') }} ₽</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RUB2 card -->
+            <div style="position:relative;">
+                <img src="{{ url_for('static', filename='images/photos/black-card.png') }}" alt=""
+                     style="position:absolute;right:-80px;top:55%;transform:translateY(-50%);width:345px;z-index:0;pointer-events:none;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.18));filter:brightness(.85) drop-shadow(0 8px 20px rgba(0,0,0,0.18));">
+                <div class="account-card" id="card-rub2" onclick="selectAccount('rub2')" style="position:relative;z-index:1; margin-right:85px;">
+                    <div style="flex:1;">
+                        <div class="label">с RUB_(2)</div>
+                        <div class="amount">{{ '{:,.2f}'.format(user.accounts.rub2).replace(',', ' ') }} ₽</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: form -->
+        <div class="card" style="flex:1;min-width:280px;max-width:400px;display:flex;flex-direction:column;gap:20px;border-radius:32px;">
+            <div class="field">
+                <label>Номер получателя</label>
+                <input id="inp-phone" type="text" placeholder="+79991234567">
+            </div>
+            <div class="field">
+                <label>Сумма перевода</label>
+                <input id="inp-amount" type="number" min="0.01" step="0.01" placeholder="0.00">
+            </div>
+
+            <div id="transfer-msg" class="msg"></div>
+
+            <button id="btn-transfer" class="btn btn-primary" onclick="doTransfer()" disabled style="width:100%;">
+                Перевести
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+let selectedAccount = null;
+
+function selectAccount(acc) {
+    selectedAccount = acc;
+    document.getElementById('card-rub').classList.toggle('selected', acc === 'rub');
+    document.getElementById('card-rub2').classList.toggle('selected', acc === 'rub2');
+    document.getElementById('btn-transfer').disabled = false;
+    document.getElementById('btn-transfer').className = 'btn btn-primary';
+}
+
+function showMsg(text, ok) {
+    const el = document.getElementById('transfer-msg');
+    el.textContent = text;
+    el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
+}
+
+function showToast() {
+    const t = document.getElementById('toast-notify');
+    t.classList.add('show');
+    // Уведомление исчезает одновременно с переходом — без задержки после fade
+    setTimeout(() => {
+        window.location.href = '/cabinet/';
+    }, 3000);
+}
+
+function doTransfer() {
+    if (!selectedAccount) { showMsg('Выберите счёт для перевода', false); return; }
+    const phone = document.getElementById('inp-phone').value.trim();
+    const amount = document.getElementById('inp-amount').value.trim();
+    if (!phone || !amount) { showMsg('Заполните все поля', false); return; }
+
+    const fd = new FormData();
+    fd.append('account', selectedAccount);
+    fd.append('recipient_phone', phone);
+    fd.append('amount', amount);
+    fd.append('csrf_token', CSRF_TOKEN);
+
+    fetch('/cabinet/transfer', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast();
+            } else {
+                showMsg(data.message, false);
+            }
+        });
+}
+</script>
+{% endblock %}

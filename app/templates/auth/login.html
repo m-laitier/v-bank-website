@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:340px;height:340px;bottom:-60px;right:-80px;opacity:.5;"></div>
+<div class="blob-rect" style="width:200px;height:200px;top:60px;left:60px;transform:rotate(18deg);opacity:.4;"></div>
+<div class="blob" style="width:130px;height:130px;top:30px;right:420px;opacity:.3;"></div>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 90px);padding:24px;">
+    <div class="card" style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:24px;">
+
+        <div style="display:flex;align-items:center;gap:12px;">
+            <a href="{{ url_for('main.index') }}" class="back-link" style="font-size:20px;">◀</a>
+            <h1 style="flex:1;text-align:center;font-size:32px;">Вход</h1>
+            <div style="width:32px;"></div>
+        </div>
+
+        <form method="POST" class="gap-16" style="display:flex;flex-direction:column;">
+            {{ form.hidden_tag() }}
+
+            <div class="field">
+                {{ form.phone.label }}
+                {{ form.phone(placeholder='+79991234567') }}
+                {% for error in form.phone.errors %}
+                    <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="field">
+                {{ form.password.label }}
+                {{ form.password(placeholder='••••••') }}
+                {% for error in form.password.errors %}
+                    <p class="msg msg-err" style="margin-top:4px;">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            {{ form.submit(class='btn btn-primary mt-8', style='width:100%;') }}
+        </form>
+
+        <p style="text-align:center;margin-top:4px;">
+            <a href="{{ url_for('auth.register') }}"
+               style="color:var(--blue-btn);font-weight:700;font-size:14px;text-decoration:none;">
+                Нет личного кабинета? Оформите карту
+            </a>
+        </p>
+
+    </div>
+</div>
+{% endblock %}

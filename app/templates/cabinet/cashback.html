@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:340px;height:340px;bottom:-80px;right:-100px;opacity:.5;"></div>
+<div class="blob" style="width:180px;height:180px;top:40px;left:-60px;opacity:.35;"></div>
+{% endblock %}
+
+{% block nav_links %}
+<a href="{{ url_for('cabinet.cabinet') }}" class="accent">Профиль</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px 60px;gap:24px;">
+
+    <div style="display:flex;align-items:center;gap:12px;">
+        <a href="{{ url_for('cabinet.cabinet') }}" class="back-link">◀</a>
+        <h1 style="font-size:30px;">Выбрать категории кэшбэка</h1>
+    </div>
+
+    {% if message %}
+    <div class="msg {% if success %}msg-ok{% else %}msg-err{% endif %}" style="font-size:16px;">{{ message }}</div>
+    {% endif %}
+
+    <div class="card" style="max-width:480px;width:100%;display:flex;flex-direction:column;gap:16px;">
+        <p style="font-size:14px;font-weight:600;color:var(--text-secondary);">Выберите ровно 3 категории</p>
+
+        <form method="POST" id="cb-form" style="display:flex;flex-direction:column;gap:12px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            {% set options = [
+                ('all',         '1',  'Все покупки'),
+                ('restaurants', '3',  'Рестораны'),
+                ('education',   '2',  'Образование'),
+                ('partners',    '5',  'У партнёров'),
+                ('travel',      '7',  'Путешествия'),
+            ] %}
+
+            {% for key, pct, label in options %}
+            {% set checked = key in selected %}
+            <label class="cb-option {% if checked %}checked{% endif %}" id="opt-{{ key }}" onclick="toggleCB(this, '{{ key }}')">
+                <input type="checkbox" name="categories" value="{{ key }}"
+                       {% if checked %}checked{% endif %}>
+                <div class="cb-check">{% if checked %}✓{% endif %}</div>
+                <span class="cb-pct">{{ pct }}%</span>
+                <span>{{ label }}</span>
+            </label>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary mt-8">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<script>
+let checkedCount = document.querySelectorAll('.cb-option.checked').length;
+
+function toggleCB(label, key) {
+    const input = label.querySelector('input[type=checkbox]');
+    const check = label.querySelector('.cb-check');
+    if (label.classList.contains('checked')) {
+        label.classList.remove('checked');
+        check.textContent = '';
+        input.checked = false;
+        checkedCount--;
+    } else {
+        if (checkedCount >= 3) return;
+        label.classList.add('checked');
+        check.textContent = '✓';
+        input.checked = true;
+        checkedCount++;
+    }
+    updateDisabled();
+}
+
+function updateDisabled() {
+    document.querySelectorAll('.cb-option').forEach(opt => {
+        if (checkedCount >= 3 && !opt.classList.contains('checked')) {
+            opt.classList.add('disabled-opt');
+        } else {
+            opt.classList.remove('disabled-opt');
+        }
+    });
+}
+
+updateDisabled();
+</script>
+{% endblock %}

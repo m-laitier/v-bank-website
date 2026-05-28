@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block blobs %}
+<div class="blob" style="width:420px;height:420px;bottom:-80px;left:-130px;"></div>
+<div class="blob" style="width:200px;height:200px;top:60px;right:100px;opacity:.45;"></div>
+<div class="blob-rect" style="width:160px;height:160px;top:90px;left:280px;transform:rotate(22deg);opacity:.35;"></div>
+{% endblock %}
+
+{% block content %}
+<div class="index-hero" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: space-between !important; text-align: center !important; width: 100% !important; position: relative !important; padding: 60px 20px 80px !important; box-sizing: border-box !important; min-height: 500px !important; transform: none !important;">
+    
+    <h1 style="position:relative; z-index:2; margin: 0 0 40px 0 !important; top: -30px !important;">ХРАНИТЕ ДЕНЬГИ <span style="color:var(--accent)">В-БАНКЕ</span>
+        <img src="{{ url_for('static', filename='images/photos/mini-logo.png') }}" 
+            alt="Логотип" 
+            style="display:inline; vertical-align:middle; margin-left:6px; width:66px; height:66px; margin-top: -7.5px; margin-left: -7px;">
+    </h1>
+    <img style="opacity: 0.1; transform: scale(2.7); margin-bottom: -250px;" class="feature-card-img" src="{{ url_for('static', filename='images/photos/bank_building.png') }}" alt="Банк">
+    
+    <div class="card index-cta-card">
+        {% if current_user.is_authenticated %}
+            <p style="font-size:37px;font-weight:700;line-height:1.4;">
+                С возвращением, <span style="color:var(--accent)">{{ current_user.first_name }}</span>!<br>
+                <span style="font-size:22px;font-weight:500;color:var(--text-secondary);">Рады видеть вас снова в В-Банке</span>
+            </p>
+            <a href="{{ url_for('cabinet.cabinet') }}" class="btn btn-primary" style="background:linear-gradient(135deg,#3391ff,#006DFF) !important;border-color:transparent !important;font-size:40px;">ЛИЧНЫЙ КАБИНЕТ</a>
+        {% else %}
+            <p style="font-size:37px;font-weight:600;line-height:1.5;color:var(--text);">
+                Дебетовая карта с бесплатным обслуживанием<br>и накопительный счёт с ежедневными начислениями
+            </p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="background:linear-gradient(135deg,#3391ff,#006DFF) !important;border-color:transparent !important;font-size:40px;">НАЧНИТЕ КОПИТЬ СЕГОДНЯ</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="feature-section">
+    <div class="feature-card-wrap">
+        <img class="feature-card-img" src="{{ url_for('static', filename='images/photos/card2.png') }}" alt="Карта">
+    </div>
+    <div class="feature-label-card">НАДЁЖНОСТЬ</div>
+    <div class="feature-text-card">
+        В-Банк обеспечивает многоуровневую
+        защиту данных, строго следует нормативам
+        ЦБ и страхует каждый вклад. Ваши деньги в надёжных руках.
+    </div>
+</div>
+
+<div class="feature-section">
+    <div class="feature-card-wrap">
+        <img class="feature-card-img" src="{{ url_for('static', filename='images/photos/card3.png') }}" alt="Карта">
+    </div>
+    <div class="feature-label-card">СОВРЕМЕННОСТЬ</div>
+    <div class="feature-text-card">
+        Никаких очередей и лишних звонков. Только
+        удобные приложения, мгновенные переводы
+        и передовые технологии защиты.
+        В-Банк — это современный банк для тех, кто ценит своё время.
+    </div>
+</div>
+
+<div class="feature-section" style="padding-bottom:60px;">
+    <div class="feature-card-wrap">
+        <img class="feature-card-img" src="{{ url_for('static', filename='images/photos/card4.png') }}" alt="Карта">
+    </div>
+    <div class="feature-label-card">ПРОЗРАЧНОСТЬ</div>
+    <div class="feature-text-card">
+        Только честные условия, которые мы
+        выполняем. Никаких подводных камней,
+        запутанных схем или неожиданных комиссий.
+        В-Банк — это открытость, которую вы заслуживаете.
+    </div>
+</div>
+{% endblock %}
